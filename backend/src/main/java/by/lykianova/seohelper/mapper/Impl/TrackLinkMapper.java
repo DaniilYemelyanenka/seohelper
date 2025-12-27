@@ -18,7 +18,7 @@ public interface TrackLinkMapper {
 
     TrackLinkDTO toDTO(TrackedLink trackedLink);
 
-    @Mapping(target = "createdAt", expression = "java(java.time.LocalDate.now())")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     TrackedLink toEntity(TrackLinkDTO trackLinkDTO);
 
     List<TrackLinkDTO> toDtos(Iterable<TrackedLink> trackedLinks);

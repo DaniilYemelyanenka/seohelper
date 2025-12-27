@@ -2,7 +2,6 @@ package by.lykianova.seohelper.controller;
 
 import by.lykianova.seohelper.DTO.TrackLinkCreateDTO;
 import by.lykianova.seohelper.service.TrackLinkService;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,15 +21,14 @@ public class TrackerController {
         return ResponseEntity.status(HttpStatus.OK).body(trackLink);
     }
 
-    @GetMapping("/{tackLink}")
-    public ResponseEntity<String> postTrackLink(@PathVariable String trackLink){
-        System.out.println("tracklink: " + trackLink);
-        return ResponseEntity.status(HttpStatus.OK).body("");
+    @GetMapping("/t/{shortCode}")
+    public ResponseEntity<String> postTrackLink(@PathVariable String shortCode,HttpServletRequest httpServletRequest){
+        String redirectUrl = trackLinkService.analyzeTrackLinkClick(httpServletRequest, shortCode);
+        return ResponseEntity.status(HttpStatus.OK).body(redirectUrl);
     }
 
     @GetMapping("/info")
     public ResponseEntity<String> getTrackLinkInformation(@RequestParam(value = "id") Long id){
-        System.out.println("id:" + id);
         return ResponseEntity.status(HttpStatus.OK).body("info");
     }
 }

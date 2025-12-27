@@ -7,6 +7,6 @@ public class TrackLinkDTO {
 
     private String originalUrl;
 
-    private String short_code;
+    private String shortCode;
 
 }

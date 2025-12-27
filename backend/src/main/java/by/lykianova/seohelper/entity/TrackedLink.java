@@ -26,6 +26,6 @@ public class TrackedLink {
 
     private String originalUrl;
 
-    private String short_code;
+    private String shortCode;
 
 }

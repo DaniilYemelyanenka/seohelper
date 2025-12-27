@@ -1,6 +1,7 @@
 package by.lykianova.seohelper.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "link_visits")
+@Data
 public class LinkVisits{
 
     @Id
@@ -19,7 +21,7 @@ public class LinkVisits{
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TrackedLink trackedLink;
 
-    private String ip_address;
+    private String ipAddress;
 
     private String country;
 
