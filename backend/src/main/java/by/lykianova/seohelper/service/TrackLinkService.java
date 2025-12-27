@@ -5,6 +5,7 @@ import by.lykianova.seohelper.DTO.TrackLinkDTO;
 import by.lykianova.seohelper.config.Base62;
 import by.lykianova.seohelper.entity.LinkVisits;
 import by.lykianova.seohelper.entity.TrackedLink;
+import by.lykianova.seohelper.entity.VisitLinksAnalyze;
 import by.lykianova.seohelper.mapper.Impl.LinkVisitMapper;
 import by.lykianova.seohelper.mapper.Impl.TrackLinkMapper;
 import by.lykianova.seohelper.repository.TrackLinkRepository;
@@ -73,4 +74,14 @@ public class TrackLinkService{
 
         return linkVisits;
     }
+
+    public VisitLinksAnalyze getTrackLinkAnalyze(Long id){
+
+        if(trackLinkRepository.existsById(id)){
+            return linkVisitsService.makeVisitLinkAnalyze(id);
+        }else
+            throw new EntityNotFoundException("Track link with this id not found");
+
+    }
+
 }
