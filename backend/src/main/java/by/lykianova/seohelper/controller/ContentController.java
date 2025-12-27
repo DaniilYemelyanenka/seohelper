@@ -1,26 +1,25 @@
 package by.lykianova.seohelper.controller;
 
+import by.lykianova.seohelper.DTO.GenerateContentCreateDTO;
+import by.lykianova.seohelper.DTO.GenerateContentDTO;
+import by.lykianova.seohelper.response.CustomApiResponse;
+import by.lykianova.seohelper.service.GenerateContentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/content")
 public class ContentController {
 
-    @PostMapping("site-description")
-    public ResponseEntity<String> getGeneratedSiteDescriptionContent(){
-        //TODO here must be generation of site description
-        return ResponseEntity.status(HttpStatus.CREATED).body("site description");
-    }
+    @Autowired
+    private GenerateContentService generateContentService;
 
-    @PostMapping("social-post")
-    public ResponseEntity<String> getGeneratedSocialPostContent(){
-        //TODO here must be generation of social-post content
-        return ResponseEntity.status(HttpStatus.CREATED).body("social-post");
+    @PostMapping("generate")
+    public ResponseEntity<CustomApiResponse<GenerateContentDTO>> getGeneratedSiteDescriptionContent(@RequestBody GenerateContentCreateDTO generateContentCreateDTO){
+        GenerateContentDTO generateContentDTO = generateContentService.generateContent(generateContentCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CustomApiResponse<>(true,generateContentDTO));
     }
 
     @GetMapping("history")

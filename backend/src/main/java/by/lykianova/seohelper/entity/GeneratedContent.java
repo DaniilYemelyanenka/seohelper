@@ -20,17 +20,15 @@ public class GeneratedContent {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    @OnDelete(action = OnDeleteAction.CASCADE)
+//    private User user;
 
 
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(value = EnumType.STRING)
-    @CollectionTable(name = "content_type",
-                    joinColumns = @JoinColumn(name = "content_id"))
-    private Set<ContentType> contentType = new HashSet<>();
+    @Column(name = "content_type")
+    private ContentType contentType;
 
     private String platform;
 

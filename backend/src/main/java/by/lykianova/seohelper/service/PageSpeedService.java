@@ -1,6 +1,7 @@
 package by.lykianova.seohelper.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -50,6 +51,7 @@ public class PageSpeedService {
         return (int) ((score / (double) max) * 100);
     }
 
+    @Cacheable(value = "lighthouse_result", key = "#url")
     private Map getLighthouseResult(String url){
 
         //TODO make api response cached
@@ -58,6 +60,10 @@ public class PageSpeedService {
                 .queryParam("url",url)
                 .queryParam("strategy","mobile")
                 .queryParam("key",API_KEY)
+                .queryParam(
+                "fields",
+                "lighthouseResult(categories/performance/score,audits)"
+                )
                 .toUriString();
 
         ResponseEntity<Map> responseEntity = restTemplate.getForEntity(requestUrl,Map.class);

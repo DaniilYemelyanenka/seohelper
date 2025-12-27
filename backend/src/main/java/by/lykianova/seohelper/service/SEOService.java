@@ -27,6 +27,7 @@ public class SEOService {
     public SeoAnalyseResult getAnalyze(SeoReportCreateDTO seoReportCreateDTO){
         SeoReportDTO seoReportDTO = seoParserService.parse(seoReportCreateDTO.getUrl());
         SeoReports seoReports = seoMapper.toEntity(seoReportDTO);
+        //TODO make analyze cacheable or do something with duplicated data
         seoRepository.save(seoReports);
         return seoAnalyserService.analyseSite(seoReportDTO);
     }
