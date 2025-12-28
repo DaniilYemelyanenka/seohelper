@@ -1,6 +1,7 @@
 package by.lykianova.seohelper.globalHandle;
 
 import by.lykianova.seohelper.error.SiteException;
+import by.lykianova.seohelper.error.UserNotFoundException;
 import by.lykianova.seohelper.response.ErrorResponse;
 import ch.qos.logback.core.encoder.EchoEncoder;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> catchArgumentNotValid(MethodArgumentNotValidException exception) {
+        System.out.println("ex: " + exception);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
                 LocalDate.now(),
@@ -45,10 +47,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> catchEntityNotFound(EntityNotFoundException exception){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(
                 LocalDate.now(),
                 HttpStatus.NOT_FOUND,
                 exception.getMessage()
         ));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> catchUserNotFoundException(UserNotFoundException exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponse(
+                        LocalDate.now(),
+                        HttpStatus.NOT_FOUND,
+                        exception.getMessage()
+                )
+        );
     }
 }

@@ -37,7 +37,7 @@ public class ContentController {
     @GetMapping("history")
     public ResponseEntity<List<GenerateContentDTO>> getGeneratedContent(){
         List<GenerateContentDTO> generateContentDTOList = generateContentService.getHistory(1L);
-        return ResponseEntity.status(HttpStatus.CREATED).body(generateContentDTOList);
+        return ResponseEntity.status(HttpStatus.OK).body(generateContentDTOList);
     }
 
 }

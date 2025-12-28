@@ -3,9 +3,9 @@ package by.lykianova.seohelper.service;
 import by.lykianova.seohelper.DTO.CreateUserDTO;
 import by.lykianova.seohelper.entity.User;
 import by.lykianova.seohelper.enums.Role;
+import by.lykianova.seohelper.error.UserNotFoundException;
 import by.lykianova.seohelper.mapper.Impl.UserMapper;
 import by.lykianova.seohelper.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +27,6 @@ public class UserService {
     }
 
     public User getUserById(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("user with this id is not found"));
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 }
