@@ -2,6 +2,8 @@ package by.lykianova.seohelper.globalHandle;
 
 import by.lykianova.seohelper.error.SiteException;
 import by.lykianova.seohelper.response.ErrorResponse;
+import ch.qos.logback.core.encoder.EchoEncoder;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -39,5 +41,14 @@ public class GlobalExceptionHandler {
                         siteException.getMessage()
                 )
         );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> catchEntityNotFound(EntityNotFoundException exception){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        ));
     }
 }

@@ -19,10 +19,10 @@ public class TrackedLink {
 
     private LocalDateTime createdAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    @OnDelete(action = OnDeleteAction.CASCADE)
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
     private String originalUrl;
 

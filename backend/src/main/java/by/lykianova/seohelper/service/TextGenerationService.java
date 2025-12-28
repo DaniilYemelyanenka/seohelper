@@ -2,6 +2,7 @@ package by.lykianova.seohelper.service;
 
 import by.lykianova.seohelper.DTO.GenerateContentDTO;
 import by.lykianova.seohelper.enums.ContentType;
+import by.lykianova.seohelper.enums.Platform;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class TextGenerationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public GenerateContentDTO generateText(String prompt,String topic,String platform){
+    public GenerateContentDTO generateText(String prompt, String topic, Platform platform){
 
         System.out.println(prompt);
 
@@ -42,7 +43,7 @@ public class TextGenerationService {
         contentDTO.setContent(text);
         contentDTO.setTopic(topic);
         contentDTO.setPlatform(platform);
-        contentDTO.setContentType(ContentType.CONTENT_POST);
+        contentDTO.setContentType(ContentType.POST);
 
         return contentDTO;
     }

@@ -5,6 +5,7 @@ import by.lykianova.seohelper.DTO.TrackLinkDTO;
 import by.lykianova.seohelper.config.Base62;
 import by.lykianova.seohelper.entity.LinkVisits;
 import by.lykianova.seohelper.entity.TrackedLink;
+import by.lykianova.seohelper.entity.User;
 import by.lykianova.seohelper.entity.VisitLinksAnalyze;
 import by.lykianova.seohelper.mapper.Impl.LinkVisitMapper;
 import by.lykianova.seohelper.mapper.Impl.TrackLinkMapper;
@@ -27,12 +28,15 @@ public class TrackLinkService{
     private LinkVisitsService linkVisitsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private TrackLinkMapper trackLinkMapper;
 
     @Autowired
     private LinkVisitMapper linkVisitMapper;
 
-    public String getTrackLink(TrackLinkCreateDTO trackLinkCreateDTO){
+    public String getTrackLink(TrackLinkCreateDTO trackLinkCreateDTO,Long userId){
 
         TrackLinkDTO trackLinkDTO = trackLinkMapper.fromCreateToDTO(trackLinkCreateDTO);
         TrackedLink trackedLink = trackLinkMapper.toEntity(trackLinkDTO);
@@ -40,6 +44,11 @@ public class TrackLinkService{
         //TODO Change savedTrackLink from entity to DTO
 
         String shortCode = Base62.encode(savedTrackLink.getId());
+
+        savedTrackLink.setShortCode(shortCode);
+
+        User user = userService.getUserById(userId);
+        savedTrackLink.setUser(user);
 
         trackLinkRepository.save(savedTrackLink);
         return "api/v1/api/v1/track-link/" + shortCode;

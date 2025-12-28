@@ -2,8 +2,16 @@ package by.lykianova.seohelper.service;
 
 import by.lykianova.seohelper.DTO.GenerateContentCreateDTO;
 import by.lykianova.seohelper.DTO.GenerateContentDTO;
+import by.lykianova.seohelper.entity.GeneratedContent;
+import by.lykianova.seohelper.entity.User;
+import by.lykianova.seohelper.enums.Platform;
+import by.lykianova.seohelper.mapper.Impl.GeneratedContentMapper;
+import by.lykianova.seohelper.repository.GenerationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GenerateContentService {
@@ -11,10 +19,13 @@ public class GenerateContentService {
     @Autowired
     private TextGenerationService textGenerationService;
 
-    public GenerateContentDTO generateContent(GenerateContentCreateDTO generateContentCreateDTO){
+    @Autowired
+    private GenerationRepository generationRepository;
 
-        System.out.println(generateContentCreateDTO.getPlatform());
-        System.out.println(generateContentCreateDTO.getTopic());
+    @Autowired
+    private GeneratedContentMapper generatedContentMapper;
+
+    public GenerateContentDTO generateContent(GenerateContentCreateDTO generateContentCreateDTO, User user){
 
         GenerateContentDTO contentDTO = textGenerationService.generateText(String.format("<system>\n" +
                         "You are a professional  copywriter and SEO specialist. Your task is to write clear, commercial texts . You must:\n" +
@@ -27,13 +38,25 @@ public class GenerateContentService {
                         "Generate text for %s "+
                         "**Topic:** %s\n" +
                         "**Tone of voice:** Expert, confident, but without complex jargon. Trustworthy.\n" +
-                        "Generate the response **in its entirety**, do not cut it off. The text length should be about 100-150 words.\n" +
+                        "Generate the response **in its entirety**, do not cut it off. The text length should be about 50-100 words.\n" +
                         "</user>",generateContentCreateDTO.getPlatform(),generateContentCreateDTO.getTopic()),
-                generateContentCreateDTO.getTopic(),generateContentCreateDTO.getPlatform());
+                generateContentCreateDTO.getTopic(), generateContentCreateDTO.getPlatform());
 
-        //TODO Generate content by using prompt to II
-        //TODO save this generation to database
-        return contentDTO;
+        GeneratedContent generatedContent = generatedContentMapper.toEntity(contentDTO);
+
+        generatedContent.setUser(user);
+
+        return generatedContentMapper.toDto(generationRepository.save(generatedContent));
+    }
+
+    public List<GenerateContentDTO> getHistory(Long userId){
+        return generatedContentMapper.toDtos(generationRepository.findAllByUserId(userId));
+    }
+
+    private String getPlatform(Platform platform){
+        if(platform.equals(Platform.TELEGRAM)) return "telegram";
+        if(platform.equals(Platform.SITE)) return "site";
+        return "";
     }
 
 }

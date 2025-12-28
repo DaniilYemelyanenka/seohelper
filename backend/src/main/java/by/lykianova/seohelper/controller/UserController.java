@@ -1,13 +1,24 @@
 package by.lykianova.seohelper.controller;
 
+import by.lykianova.seohelper.DTO.CreateUserDTO;
 import by.lykianova.seohelper.entity.User;
+import by.lykianova.seohelper.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/vi/users")
+@RequestMapping("api/v1/users")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/register")
+    public void register(@RequestBody CreateUserDTO createUserDTO){
+        userService.addUser(createUserDTO);
+    }
 
     @GetMapping("me")
     public ResponseEntity<String> getUserInformation(@RequestParam(value = "id") Long id){

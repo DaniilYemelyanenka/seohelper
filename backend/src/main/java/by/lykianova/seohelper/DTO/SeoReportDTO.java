@@ -20,4 +20,6 @@ public class SeoReportDTO {
     private Integer mobileScore;
 
     private LocalDateTime createdAt;
+
+    private Long userId;
 }
