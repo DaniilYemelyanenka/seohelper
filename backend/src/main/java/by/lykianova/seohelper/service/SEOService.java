@@ -2,7 +2,7 @@ package by.lykianova.seohelper.service;
 
 import by.lykianova.seohelper.DTO.SeoReportCreateDTO;
 import by.lykianova.seohelper.DTO.SeoReportDTO;
-import by.lykianova.seohelper.entity.SeoAnalyseResult;
+import by.lykianova.seohelper.response.SeoAnalyseResult;
 import by.lykianova.seohelper.entity.SeoReports;
 import by.lykianova.seohelper.mapper.Impl.SeoMapper;
 import by.lykianova.seohelper.repository.SeoRepository;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -42,7 +41,6 @@ public class SEOService {
 
         SeoReports saved = seoRepository.save(seoReports);
 
-        //TODO make analyze cacheable or do something with duplicated data
         SeoReportDTO savedDTO = seoMapper.toDTO(saved);
 
         return seoAnalyserService.analyseSite(savedDTO);
@@ -56,7 +54,7 @@ public class SEOService {
 
     public List<SeoAnalyseResult> getAllAnylysesById(Long id){
         List<SeoAnalyseResult> seoAnalyseResults = new ArrayList<>();
-        List<SeoReports> seoReports = seoRepository.findAllByUserId(1L);
+        List<SeoReports> seoReports = seoRepository.findAllByUserId(id);
         List<SeoReportDTO> seoReportDTOS = seoMapper.toDtos(seoReports);
         seoReportDTOS.forEach(el -> seoAnalyseResults.add(seoAnalyserService.analyseSite(el)));
         return seoAnalyseResults;

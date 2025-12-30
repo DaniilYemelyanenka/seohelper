@@ -2,7 +2,7 @@ package by.lykianova.seohelper.controller;
 
 
 import by.lykianova.seohelper.DTO.SeoReportCreateDTO;
-import by.lykianova.seohelper.entity.SeoAnalyseResult;
+import by.lykianova.seohelper.response.SeoAnalyseResult;
 import by.lykianova.seohelper.response.CustomApiResponse;
 import by.lykianova.seohelper.service.SEOService;
 import jakarta.validation.Valid;

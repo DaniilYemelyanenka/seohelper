@@ -1,4 +1,4 @@
-package by.lykianova.seohelper.entity;
+package by.lykianova.seohelper.response;
 
 import lombok.Data;
 

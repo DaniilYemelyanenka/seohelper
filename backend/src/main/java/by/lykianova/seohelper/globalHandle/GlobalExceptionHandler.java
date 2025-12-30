@@ -5,6 +5,8 @@ import by.lykianova.seohelper.error.UserNotFoundException;
 import by.lykianova.seohelper.response.ErrorResponse;
 import ch.qos.logback.core.encoder.EchoEncoder;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -61,6 +63,31 @@ public class GlobalExceptionHandler {
                         LocalDate.now(),
                         HttpStatus.NOT_FOUND,
                         exception.getMessage()
+                )
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> catchConstraintValidationException(ConstraintViolationException exception){
+        ConstraintViolation<?> violation =
+                exception.getConstraintViolations().iterator().next();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(
+                        LocalDate.now(),
+                        HttpStatus.BAD_REQUEST,
+                        violation.getMessage()
+                )
+        );
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> catchRuntimeException(RuntimeException runtimeException){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new ErrorResponse(
+                        LocalDate.now(),
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Something was wrong"
                 )
         );
     }

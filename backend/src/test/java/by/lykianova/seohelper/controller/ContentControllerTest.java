@@ -8,9 +8,7 @@ import by.lykianova.seohelper.enums.Platform;
 import by.lykianova.seohelper.error.UserNotFoundException;
 import by.lykianova.seohelper.service.GenerateContentService;
 import by.lykianova.seohelper.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

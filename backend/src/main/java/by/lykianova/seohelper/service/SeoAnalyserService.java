@@ -1,7 +1,7 @@
 package by.lykianova.seohelper.service;
 
 import by.lykianova.seohelper.DTO.SeoReportDTO;
-import by.lykianova.seohelper.entity.SeoAnalyseResult;
+import by.lykianova.seohelper.response.SeoAnalyseResult;
 import org.springframework.stereotype.Service;
 
 @Service
