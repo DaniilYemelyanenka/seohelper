@@ -16,7 +16,7 @@
       <div class="header-center">
           <ul>
               <router-link class=" li active-link" to="/">Анализ</router-link>
-              <router-link class="li" to="/content">Генерировать контент</router-link>
+              <router-link class="li" to="/content/generate">Генерировать контент</router-link>
               <router-link class="li" to="/track-link">Генерировать трек ссылку</router-link>
           </ul>
       </div>
@@ -29,8 +29,8 @@
 
       <nav class="nav-mobile" :class="{ 'open': isOpen }">
         <router-link @click="toggleMenu" to="/">Анализ</router-link>
-        <router-link @click="toggleMenu" to="/about">Генерировать контент</router-link>
-        <router-link @click="toggleMenu" to="/contact">генерироват трек ссылку</router-link>
+        <router-link @click="toggleMenu" to="/content/generate">Генерировать контент</router-link>
+        <router-link @click="toggleMenu" to="/track-link">генерироват трек ссылку</router-link>
         <router-link @click="toggleMenu" to="/login">Войти</router-link>
       </nav>
 
@@ -51,6 +51,7 @@
       background-color: #FFFFFF;
       border-bottom: 2px solid #E5E5E5;
       box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      z-index: 1000;
       left: 0;
       top:0;
       position: fixed;

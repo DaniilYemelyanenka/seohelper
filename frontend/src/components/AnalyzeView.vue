@@ -124,7 +124,7 @@ onMounted(() => {
     background-color: #FFFFFF;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    gap: 5vh;
+    gap: 3.5vh;
     }
 
     .title {
