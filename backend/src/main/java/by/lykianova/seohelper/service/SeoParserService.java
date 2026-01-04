@@ -21,6 +21,7 @@ public class SeoParserService {
     @Autowired
     private PageSpeedService pageSpeedService;
 
+    @Cacheable(value = "seo_parse_result", key = "#url")
     public SeoReportDTO parse(String url) {
 
         if(!isSiteValid(url)){

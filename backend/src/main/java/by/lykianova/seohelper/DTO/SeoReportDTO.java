@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Data
 public class SeoReportDTO {
 
+    private Long id;
+
     private String url;
 
     private String metaDescription;

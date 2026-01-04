@@ -51,7 +51,7 @@ public class TrackLinkService{
         savedTrackLink.setUser(user);
 
         trackLinkRepository.save(savedTrackLink);
-        return "api/v1/api/v1/track-link/" + shortCode;
+        return "api/v1/track-link/t/" + shortCode;
     }
 
     public String analyzeTrackLinkClick(HttpServletRequest httpServletRequest, String shortCode){

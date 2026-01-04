@@ -14,10 +14,10 @@ import java.util.Map;
 @Service
 public class TextGenerationService {
 
-    @Value("${huggingface.api.key}")
+    @Value("${ollama.api.key}")
     private String API_KEY;
 
-    @Value("${huggingface.api.url}")
+    @Value("${ollama.api.url}")
     private String API_URL;
 
 

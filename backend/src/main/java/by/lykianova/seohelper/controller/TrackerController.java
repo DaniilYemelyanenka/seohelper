@@ -21,7 +21,7 @@ public class TrackerController {
     @Autowired
     private TrackLinkService trackLinkService;
 
-    @GetMapping()
+    @PostMapping()
     public ResponseEntity<String> getTrackLink(@Valid @RequestBody TrackLinkCreateDTO trackLinkCreateDTO){
         String trackLink = trackLinkService.getTrackLink(trackLinkCreateDTO,1L);
         return ResponseEntity.status(HttpStatus.OK).body(trackLink);
