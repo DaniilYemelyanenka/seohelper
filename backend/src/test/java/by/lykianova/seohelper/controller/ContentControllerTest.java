@@ -2,11 +2,15 @@ package by.lykianova.seohelper.controller;
 
 import by.lykianova.seohelper.DTO.GenerateContentCreateDTO;
 import by.lykianova.seohelper.DTO.GenerateContentDTO;
+import by.lykianova.seohelper.config.SecurityConfiguration;
+import by.lykianova.seohelper.config.UserPrincipals;
 import by.lykianova.seohelper.entity.User;
 import by.lykianova.seohelper.enums.ContentType;
 import by.lykianova.seohelper.enums.Platform;
 import by.lykianova.seohelper.error.UserNotFoundException;
 import by.lykianova.seohelper.service.GenerateContentService;
+import by.lykianova.seohelper.service.JwtService;
+import by.lykianova.seohelper.service.MyUserDetailsService;
 import by.lykianova.seohelper.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -14,8 +18,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+
 
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +33,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ContentController.class)
+@Import({SecurityConfiguration.class})
 class ContentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    //отправляет запросы без поднятия сервера
+
+    @MockBean
+    private MyUserDetailsService userDetailsService;
+
+
+    @MockBean
+    private JwtService jwtService;
 
 
     @Autowired
     private ObjectMapper objectMapper;
-    // преобразование из object в JSON
 
     @MockBean
     private UserService userService;
@@ -59,20 +73,22 @@ class ContentControllerTest {
         generateContentDTO.setUserId(1L);
 
         User user = new User();
+        user.setEmail("email");
         user.setId(1L);
 
-        Mockito.when(userService.getUserById(1l)).thenReturn(user);
+        Mockito.when(userService.getUserByEmail("email")).thenReturn(user);
         Mockito.when(generateContentService.generateContent(generateContentCreateDTO,user)).thenReturn(generateContentDTO);
 
 
         mockMvc.perform(post("/api/v1/content/generate")
+                        .with(user(new UserPrincipals(user)))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(generateContentCreateDTO)))
                         .andExpect(status().isCreated())
                         .andExpect(jsonPath("$.success").value(true))
                         .andExpect(jsonPath("$.data.content").value("generated content"));
 
-        Mockito.verify(userService).getUserById(1L);
+        Mockito.verify(userService).getUserByEmail("email");
         Mockito.verify(generateContentService).generateContent(generateContentCreateDTO,user);
 
     }
@@ -94,12 +110,16 @@ class ContentControllerTest {
         generateContentDTO2.setTopic("dog");
         generateContentDTO2.setContent("some content dog");
 
+        User user = new User();
+        user.setEmail("email");
+        user.setId(1L);
+
         List<GenerateContentDTO> historyList = List.of(generateContentDTO1,generateContentDTO2);
 
         Mockito.when(generateContentService.getHistory(1L)).thenReturn(historyList);
 
 
-        mockMvc.perform(get("/api/v1/content/history"))
+        mockMvc.perform(get("/api/v1/content/history").with(user(new UserPrincipals(user))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].topic").value("cats"))
                 .andExpect(jsonPath("$[1].topic").value("dog"));
