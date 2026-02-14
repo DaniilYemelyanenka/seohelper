@@ -81,14 +81,14 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> catchRuntimeException(RuntimeException runtimeException){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponse(
-                        LocalDate.now(),
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Something was wrong"
-                )
-        );
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<ErrorResponse> catchRuntimeException(RuntimeException runtimeException){
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+//                new ErrorResponse(
+//                        LocalDate.now(),
+//                        HttpStatus.INTERNAL_SERVER_ERROR,
+//                        "Something was wrong"
+//                )
+//        );
+//    }
 }
