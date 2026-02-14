@@ -11,6 +11,7 @@ public class SeoAnalyserService {
 
         SeoAnalyseResult seoAnalyseResult = new SeoAnalyseResult();
 
+        seoAnalyseResult.setId(seoReportDTO.getId());
         seoAnalyseResult.setUrl(seoReportDTO.getUrl());
         seoAnalyseResult.setRecommendations(getRecommendations(seoReportDTO));
         seoAnalyseResult.setScore(getScore(seoReportDTO));
@@ -36,7 +37,7 @@ public class SeoAnalyserService {
         }
 
         if (seoReportDTO.getSpeedScore() != null && seoReportDTO.getSpeedScore() < 75) {
-            sb.append(String.format("- Ваша скорость загрузки: %d . Оптимизируйте скорость загрузки сайта, она влияет на SEO и мобильный опыт.\n",seoReportDTO.getMobileScore()));
+            sb.append(String.format("- Ваша скорость загрузки: %d. Оптимизируйте скорость загрузки сайта, она влияет на SEO и мобильный опыт.\n",seoReportDTO.getMobileScore()));
 
         }
 

@@ -1,6 +1,6 @@
 package by.lykianova.seohelper.mapper.Impl;
 
-import by.lykianova.seohelper.DTO.CreateUserDTO;
+import by.lykianova.seohelper.DTO.UserDTO;
 import by.lykianova.seohelper.entity.User;
 import by.lykianova.seohelper.mapper.BaseMapper;
 import org.mapstruct.Mapper;
@@ -11,6 +11,8 @@ public interface UserMapper {
 
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "isActive", constant = "true")
-    User createDtoToEntity(CreateUserDTO createUserDTO);
+    User toEntity(UserDTO userDTO);
+
+    UserDTO toDto(User user);
 
 }

@@ -27,6 +27,8 @@ public class GenerateContentService {
 
     public GenerateContentDTO generateContent(GenerateContentCreateDTO generateContentCreateDTO, User user){
 
+        //TODO add logik for translating russin to english before request LLM 
+
         GenerateContentDTO contentDTO = textGenerationService.generateText(String.format("<system>\n" +
                         "You are a professional  copywriter and SEO specialist. Your task is to write clear, commercial texts . You must:\n" +
                         "1. Always respond **completely and to the end**.\n" +

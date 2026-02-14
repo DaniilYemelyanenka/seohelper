@@ -20,4 +20,6 @@ public class GenerateContentCreateDTO {
     @NotBlank(message = "topic is required")
     @Size(min = 3, max = 255, message = "topic must be between 3 and 255 characters")
     private String topic;
+
+    private String language;
 }

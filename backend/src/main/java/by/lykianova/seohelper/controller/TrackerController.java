@@ -1,8 +1,10 @@
 package by.lykianova.seohelper.controller;
 
 import by.lykianova.seohelper.DTO.TrackLinkCreateDTO;
+import by.lykianova.seohelper.config.UserPrincipals;
 import by.lykianova.seohelper.entity.VisitLinksAnalyze;
 import by.lykianova.seohelper.service.TrackLinkService;
+import by.lykianova.seohelper.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -10,6 +12,7 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +22,18 @@ import org.springframework.web.bind.annotation.*;
 public class TrackerController {
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private TrackLinkService trackLinkService;
 
-    @GetMapping()
-    public ResponseEntity<String> getTrackLink(@Valid @RequestBody TrackLinkCreateDTO trackLinkCreateDTO){
-        String trackLink = trackLinkService.getTrackLink(trackLinkCreateDTO,1L);
+    @PostMapping()
+    public ResponseEntity<String> getTrackLink(
+            @Valid @RequestBody TrackLinkCreateDTO trackLinkCreateDTO,
+            @AuthenticationPrincipal UserPrincipals userPrincipals){
+
+        Long userId = userService.getUserIdByEmail(userPrincipals.getUsername());
+        String trackLink = trackLinkService.getTrackLink(trackLinkCreateDTO,userId);
         return ResponseEntity.status(HttpStatus.OK).body(trackLink);
     }
 
