@@ -197,8 +197,13 @@ seohelper/
 │       └── api/            # настроенный Axios-клиент
 ├── backups/                # сюда складываются дампы БД
 ├── docs/screenshots/       # скриншоты для README
+├── env/                    # шаблоны окружения и тестовые данные
+│   ├── .env.example        # шаблон для реального деплоя (CHANGE_ME_*)
+│   ├── .env.test           # безопасные значения для локального запуска и CI
+│   └── README.md
 ├── docker-compose.yml
-└── .env
+├── .gitignore
+└── .env                    # создаётся локально, в git не попадает
 ```
 
 ---
@@ -210,8 +215,22 @@ seohelper/
 ```bash
 git clone https://github.com/DaniilYemelyanenka/seohelper.git
 cd seohelper
+
+# шаблон окружения: заполните CHANGE_ME_* (JWT_SECRET обязателен)
+cp env/.env.example .env
+
 docker compose up --build -d
 ```
+
+Для локального стенда или CI можно взять готовые безопасные тестовые значения:
+
+```bash
+cp env/.env.test .env
+# либо без копирования:
+docker compose --env-file env/.env.test up --build -d
+```
+
+> Без `JWT_SECRET` backend не запустится — это защита от случайного деплоя с дефолтным секретом.
 
 После запуска:
 
@@ -219,8 +238,8 @@ docker compose up --build -d
 |---|---|
 | Frontend (nginx) | http://localhost |
 | Backend API | http://localhost:8080/api/v1 |
-| PostgreSQL | `localhost:5432` (внутри сети — `postgres:5432`) |
-| Redis | `redis:6379` |
+| PostgreSQL | внутри сети — `postgres:5432` |
+| Redis | внутри сети — `redis:6379` |
 
 Загрузите модель для генерации контента (однократно):
 
@@ -255,12 +274,19 @@ docker compose down -v       # вместе с томами PostgreSQL и Ollama
 ```bash
 cd backend
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/seohelper_db
-export SPRING_DATASOURCE_USERNAME=user
-export SPRING_DATASOURCE_PASSWORD=user
+export SPRING_DATASOURCE_USERNAME=seohelper
+export SPRING_DATASOURCE_PASSWORD=seohelper_test_pg
 export SPRING_DATA_REDIS_HOST=localhost
 export SPRING_DATA_REDIS_PORT=6379
-export SPRING_DATA_REDIS_PASSWORD=user
+export SPRING_DATA_REDIS_PASSWORD=seohelper_test_redis
 export OLLAMA_URL=http://localhost:11434
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME=seohelper_db
+export JWT_SECRET="$(openssl rand -base64 48)"   # или своё значение, минимум 32 символа
+export PAGESPEED_API_KEY=""                       # необязательно
+export MAIL_USERNAME=""                           # необязательно: без SMTP письма не уходят
+export MAIL_PASSWORD=""
 ./mvnw spring-boot:run
 ```
 
@@ -299,28 +325,55 @@ npm run build   # результат в frontend/dist, раздаётся nginx
 
 ## Переменные окружения
 
-### Backend (Docker Compose / окружение)
+Все настройки вынесены из кода в переменные окружения. Готовые шаблоны лежат в папке [`env/`](env/README.md):
 
-| Переменная | Назначение | Пример |
-|---|---|---|
-| `SPRING_DATASOURCE_URL` | JDBC-URL PostgreSQL | `jdbc:postgresql://postgres:5432/seohelper_db` |
-| `SPRING_DATASOURCE_USERNAME` | Пользователь БД | `user` |
-| `SPRING_DATASOURCE_PASSWORD` | Пароль БД | `user` |
-| `SPRING_DATA_REDIS_HOST` | Хост Redis | `redis` |
-| `SPRING_DATA_REDIS_PORT` | Порт Redis | `6379` |
-| `SPRING_DATA_REDIS_PASSWORD` | Пароль Redis | `user` |
-| `OLLAMA_URL` | Адрес Ollama | `http://ollama:11434` |
-
-### Настройки приложения
-
-| Свойство | Назначение |
+| Файл | Когда использовать |
 |---|---|
-| `jwt.secret` | Секрет подписи JWT |
-| `google.pagespeed.api.key` | Ключ Google PageSpeed Insights API |
-| `spring.mail.*` | SMTP-сервер, логин и пароль для писем |
-| `backup.path` | Каталог для дампов (по умолчанию `/backups`) |
+| [`env/.env.example`](env/.env.example) | Реальное окружение: скопируйте в `.env` и заполните все `CHANGE_ME_*` |
+| [`env/.env.test`](env/.env.test) | Локальный стенд и CI: безопасные тестовые значения, реальных секретов нет |
 
-> ⚠️ Сейчас эти значения лежат прямо в `application.properties`. Перед публичным деплоем вынесите их в переменные окружения и **перевыпустите** ключи: JWT-секрет, пароль приложения Gmail и ключ PageSpeed.
+```bash
+cp env/.env.example .env  # или: cp env/.env.test .env
+```
+
+Файл `.env` добавлен в `.gitignore` и **не попадает в репозиторий**.
+
+### Переменные
+
+| Переменная | Обязательна | Назначение | Пример / по умолчанию |
+|---|---|---|---|
+| `POSTGRES_DB` | да | Имя базы данных | `seohelper_db` |
+| `POSTGRES_USER` | да | Пользователь PostgreSQL | `seohelper` |
+| `POSTGRES_PASSWORD` | да | Пароль PostgreSQL | `CHANGE_ME_POSTGRES_PASSWORD` |
+| `REDIS_PASSWORD` | да | Пароль Redis | `CHANGE_ME_REDIS_PASSWORD` |
+| `JWT_SECRET` | **да** | Секрет подписи JWT, минимум 32 символа | `openssl rand -base64 48` |
+| `PAGESPEED_API_KEY` | нет | Ключ Google PageSpeed Insights | пусто — аудит без метрик скорости |
+| `MAIL_HOST` | нет | SMTP-хост | `smtp.gmail.com` |
+| `MAIL_PORT` | нет | SMTP-порт | `587` |
+| `MAIL_USERNAME` | нет | Логин SMTP | пусто — письма не отправляются |
+| `MAIL_PASSWORD` | нет | Пароль приложения SMTP | пусто |
+| `OLLAMA_MODEL` | нет | Модель Ollama | `qwen2.5:3b` |
+| `JPA_SHOW_SQL` | нет | Логировать SQL Hibernate | `false` |
+| `BACKUP_PATH` | нет | Каталог для дампов БД | `/backups` |
+
+`JWT_SECRET` намеренно не имеет значения по умолчанию: если переменная не задана, приложение не стартует. Это исключает случайный запуск с дефолтным секретом.
+
+### Как это подключено
+
+`application.properties` содержит только подстановки:
+
+```properties
+jwt.secret=${JWT_SECRET}
+google.pagespeed.api.key=${PAGESPEED_API_KEY:}
+spring.mail.username=${MAIL_USERNAME:}
+spring.mail.password=${MAIL_PASSWORD:}
+spring.mail.host=${MAIL_HOST:smtp.gmail.com}
+spring.mail.port=${MAIL_PORT:587}
+spring.ai.ollama.chat.model=${OLLAMA_MODEL:qwen2.5:3b}
+backup.path=${BACKUP_PATH:/backups}
+```
+
+`docker-compose.yml` передаёт эти значения в контейнер backend из `.env` и использует `${POSTGRES_*}` / `${REDIS_PASSWORD}` для самих сервисов БД и кеша.
 
 ---
 
@@ -409,8 +462,12 @@ npm run build   # результат в frontend/dist, раздаётся nginx
 - **Роли** — `ROLE_USER` и `ROLE_ADMIN`, проверка через `@PreAuthorize`; маршруты SPA также защищены гардом роутера.
 - **Подтверждение e-mail** — анализ, генерация и создание трек-ссылок доступны только подтверждённым пользователям (`@emailSecurity.isConfirmed`).
 - **BCrypt** — хранение паролей только в виде хэшей.
+- **Секреты вне кода** — JWT-секрет, пароль SMTP, ключ PageSpeed и пароли БД/Redis задаются только через переменные окружения (`.env`, см. [`env/`](env/README.md)). В `application.properties` остались лишь подстановки `${...}`.
+- **Fail-fast для JWT** — без `JWT_SECRET` backend не стартует, поэтому дефолтного секрета в коде нет.
 - **CORS** — ограничен конфигурацией `CorsConfig`.
 - **Валидация** — Jakarta Validation на DTO, глобальный обработчик ошибок с единым форматом ответа.
+
+> ⚠️ Секреты из старых коммитов остаются в истории git, даже если удалить их из файлов. Если эти ключи когда-либо были настоящими — перевыпустите их: JWT-секрет, пароль приложения Gmail и ключ PageSpeed. Инструкция — в [`env/README.md`](env/README.md#что-делать-если-секреты-уже-утекли).
 
 ---
 
@@ -433,7 +490,7 @@ cd backend
 
 - 🌍 Страна посетителя в трек-ссылках пока определяется условно (`BY`) — планируется GeoIP-сервис.
 - 🔐 В `SecurityConfiguration` проверка `api/v1/admin/** → hasRole("ADMIN")` закомментирована, а `/backup/*` не имеет `@PreAuthorize` — сейчас эти эндпоинты доступны любому аутентифицированному пользователю. Включайте проверку ролей перед публичным деплоем.
-- 🔑 Секреты хранятся в `application.properties` — нужен перенос в переменные окружения и ротация ключей.
+- ☁️ Секреты вынесены в переменные окружения, но ключи из истории git нужно перевыпустить (см. раздел [Безопасность](#безопасность)).
 - 📦 В `frontend/package.json` осталась опечатка-зависимость `pina`, из-за которой `npm ci` завершается ошибкой — удалите строку и используйте `npm install`.
 - 🧪 Покрытие тестами частичное: основные сценарии покрыты, но интеграционные тесты с БД и Redis можно расширить.
 - 📈 В планах: расширенная SEO-аналитика (скорость постранично, история позиций), графики динамики и экспорт отчётов в PDF.
