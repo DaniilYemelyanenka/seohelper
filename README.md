@@ -1,275 +1,114 @@
 # SEO Helper
 
-**Веб-платформа для SEO-аудита сайтов, генерации контента с помощью локальной LLM и аналитики переходов по коротким ссылкам.**
+**Веб-платформа для SEO-аудита сайтов, генерации контента локальной LLM и аналитики переходов по коротким ссылкам.**
 
 <p>
   <img alt="Java" src="https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white">
   <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.2.5-6DB33F?logo=springboot&logoColor=white">
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3-42B883?logo=vuedotjs&logoColor=white">
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white">
   <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white">
-  <img alt="Redis" src="https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis&logoColor=white">
-  <img alt="Ollama" src="https://img.shields.io/badge/Ollama-qwen2.5%3A3b-black">
   <img alt="Docker" src="https://img.shields.io/badge/Docker%20Compose-ready-2496ED?logo=docker&logoColor=white">
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/home.png" alt="Главная страница SEO Helper" width="100%">
-</p>
-
----
-
-## Содержание
-
-- [Возможности](#возможности)
-- [Скриншоты](#скриншоты)
-- [Архитектура](#архитектура)
-- [Технологии](#технологии)
-- [Структура проекта](#структура-проекта)
-- [Быстрый старт (Docker)](#быстрый-старт-docker)
-- [Локальная разработка](#локальная-разработка)
-- [Переменные окружения](#переменные-окружения)
-- [API](#api)
-- [Модель данных](#модель-данных)
-- [Безопасность](#безопасность)
-- [Тесты](#тесты)
-- [Известные ограничения и планы](#известные-ограничения-и-планы)
-
----
+<img src="docs/screenshots/home.png" alt="Главная страница SEO Helper" width="100%">
 
 ## Возможности
 
-| | Возможность | Что делает |
-|---|---|---|
-| 🔍 | **SEO-аудит** | Разбирает страницу через **jsoup** (title, meta description, H1, наличие HTTPS) и запрашивает **Google PageSpeed Insights** (скорость и мобильная адаптивность). Итог — оценка **0–10** и список рекомендаций. |
-| ✍️ | **Генерация контента** | Через локальную модель **Ollama `qwen2.5:3b`** (Spring AI) создаёт описание сайта или пост для Telegram, Instagram, Blog и Threads по теме, ключевым словам и аудитории. |
-| 🔗 | **Трек-ссылки** | Генерирует короткие ссылки на **Base62**, при переходе фиксирует IP, браузер и устройство, а затем показывает наглядную статистику на **Chart.js** с экспортом в **CSV**. |
-| ⏰ | **Расписание аудитов** | Позволяет поставить сайт на регулярный SEO-анализ по cron-выражению. Задачи выполняются планировщиком и восстанавливаются после перезапуска. |
-| 👤 | **Аккаунты и роли** | JWT-аутентификация, роли `ROLE_USER` / `ROLE_ADMIN`, подтверждение e-mail, восстановление и смена пароля. |
-| 🛠 | **Админ-панель** | Список пользователей с блокировкой/разблокировкой, сводная статистика приложения, резервное копирование и восстановление БД через `pg_dump` / `pg_restore`. |
-
----
+- **SEO-аудит** — разбор страницы через jsoup (meta, H1, HTTPS) и Google PageSpeed Insights; оценка 0–10 и рекомендации.
+- **Генерация контента** — локальная модель Ollama `qwen2.5:3b` через Spring AI: описание сайта и посты для Telegram, Instagram, Blog, Threads.
+- **Трек-ссылки** — короткие ссылки на Base62, сбор IP, браузера и устройства, графики Chart.js и экспорт в CSV.
+- **Расписание** — регулярный аудит по cron-выражению, задачи восстанавливаются после перезапуска.
+- **Аккаунты** — JWT, роли `ROLE_USER` / `ROLE_ADMIN`, подтверждение e-mail, сброс пароля.
+- **Админка** — блокировка пользователей, сводная статистика, резервное копирование БД через `pg_dump` / `pg_restore`.
 
 ## Скриншоты
 
-> Скриншоты сняты с собранного фронтенда на демонстрационных данных.
-
 <p align="center">
-  <img src="docs/screenshots/home.png" width="49%" alt="Главная — анализ сайта">
   <img src="docs/screenshots/seo-analyze.png" width="49%" alt="Результат SEO-анализа">
-</p>
-
-<p align="center">
-  <em>Главная страница с формой анализа и результат аудита с оценкой 8/10</em>
-</p>
-
-<p align="center">
   <img src="docs/screenshots/content-generate.png" width="49%" alt="Генерация контента">
   <img src="docs/screenshots/track-link.png" width="49%" alt="Генерация трек-ссылки">
+  <img src="docs/screenshots/admin-stats.png" width="49%" alt="Статистика в админ-панели">
 </p>
 
-<p align="center">
-  <em>Генерация поста через локальную LLM и создание короткой трек-ссылки</em>
-</p>
+<details>
+<summary>Ещё скриншоты</summary>
 
 <p align="center">
-  <img src="docs/screenshots/seo-history.png" width="49%" alt="История SEO-анализов">
-  <img src="docs/screenshots/content-history.png" width="49%" alt="История генерации контента">
-</p>
-
-<p align="center">
-  <em>Истории анализов и сгенерированных материалов с пагинацией</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/schedule.png" width="49%" alt="Расписание SEO-анализа">
-  <img src="docs/screenshots/profile.png" width="49%" alt="Личный кабинет">
-</p>
-
-<p align="center">
-  <em>Расписание регулярных проверок и личный кабинет пользователя</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/admin-users.png" width="49%" alt="Админ-панель — пользователи">
-  <img src="docs/screenshots/admin-stats.png" width="49%" alt="Админ-панель — статистика">
-</p>
-
-<p align="center">
-  <em>Управление пользователями и сводная статистика приложения</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/admin-backup.png" width="49%" alt="Админ-панель — бэкапы">
   <img src="docs/screenshots/login.png" width="49%" alt="Авторизация">
-</p>
-
-<p align="center">
-  <em>Резервное копирование базы и вход в аккаунт</em>
-</p>
-
-<p align="center">
   <img src="docs/screenshots/register.png" width="49%" alt="Регистрация">
+  <img src="docs/screenshots/profile.png" width="49%" alt="Личный кабинет">
+  <img src="docs/screenshots/schedule.png" width="49%" alt="Расписание анализа">
+  <img src="docs/screenshots/seo-history.png" width="49%" alt="История анализов">
+  <img src="docs/screenshots/content-history.png" width="49%" alt="История генераций">
+  <img src="docs/screenshots/admin-users.png" width="49%" alt="Пользователи">
+  <img src="docs/screenshots/admin-backup.png" width="49%" alt="Бэкапы">
   <img src="docs/screenshots/home-mobile.png" width="49%" alt="Мобильная версия">
 </p>
 
-<p align="center">
-  <em>Регистрация и адаптивная мобильная версия</em>
-</p>
-
----
+</details>
 
 ## Архитектура
 
 ```mermaid
 flowchart LR
-    subgraph Client
-        FE["Vue 3 SPA<br/>Vite · Pinia · Vue Router · Chart.js"]
-    end
-
-    subgraph Server
-        API["REST API<br/>Spring Boot 3 · Spring Security + JWT"]
-        SCH["Планировщик<br/>cron-задачи SEO-аудита"]
-    end
-
-    DB[("PostgreSQL 16")]
-    RD[("Redis 7.2<br/>кеш HTML-разбора")]
-    OL["Ollama<br/>qwen2.5:3b"]
-    PS["Google PageSpeed<br/>Insights API"]
-    SMTP["SMTP<br/>подтверждение e-mail"]
-
-    FE -- "/api/v1" --> API
-    API --> DB
-    API --> RD
-    API --> OL
-    API --> PS
-    API --> SMTP
-    SCH --> API
+    FE["Vue 3 SPA<br/>Vite · Pinia · Chart.js"] -- "/api/v1" --> API["Spring Boot 3<br/>REST + JWT"]
+    API --> DB[("PostgreSQL 16")]
+    API --> RD[("Redis 7.2<br/>кеш разбора")]
+    API --> OL["Ollama<br/>qwen2.5:3b"]
+    API --> PS["PageSpeed Insights"]
+    API --> SMTP["SMTP"]
 ```
 
-- **Frontend** — SPA на Vue 3, сборка Vite, состояние на Pinia, маршрутизация Vue Router, графики Chart.js, раздача статики через nginx.
-- **Backend** — Spring Boot 3.2.5 (Java 17), stateless-аутентификация по JWT, Spring Data JPA, кеш в Redis, динамические задачи `TaskScheduler`.
-- **Интеграции** — Google PageSpeed Insights для метрик производительности, Ollama (Spring AI) для генерации текстов, SMTP для писем подтверждения и сброса пароля.
+## Стек
 
----
+**Backend** — Java 17, Spring Boot 3.2, Spring Security (JWT), Spring Data JPA, Spring Data Redis, Spring AI, MapStruct, jsoup, Maven  
+**Frontend** — Vue 3, Vite, Pinia, Vue Router, Axios, Chart.js  
+**Инфраструктура** — PostgreSQL 16, Redis 7.2, Ollama, Docker Compose, nginx
 
-## Технологии
+## Быстрый старт
 
-<table>
-<tr><th align="left">Слой</th><th align="left">Стек</th></tr>
-<tr>
-  <td><b>Backend</b></td>
-  <td>Java 17, Spring Boot 3.2.5, Spring Web, Spring Security, Spring Data JPA, Spring Data Redis, Spring Cache, Spring AI (Ollama), MapStruct, Lombok, jsoup, JJWT 0.12.6, UserAgentUtils, Spring Mail, Maven</td>
-</tr>
-<tr>
-  <td><b>Frontend</b></td>
-  <td>Vue 3, Vite 7, Vue Router 4, Pinia, Axios, Chart.js 4, jwt-decode, lucide-vue-next</td>
-</tr>
-<tr>
-  <td><b>База данных</b></td>
-  <td>PostgreSQL 16, Hibernate (ddl-auto=update), сиды в <code>data.sql</code></td>
-</tr>
-<tr>
-  <td><b>Инфраструктура</b></td>
-  <td>Docker Compose: nginx + Spring Boot + PostgreSQL + Redis + Ollama, экспорт БД через <code>pg_dump</code></td>
-</tr>
-</table>
-
----
-
-## Структура проекта
-
-```text
-seohelper/
-├── backend/
-│   └── src/main/java/by/lykianova/seohelper/
-│       ├── controller/     # REST-контроллеры (auth, seo, content, track-link, admin, backup)
-│       ├── service/        # бизнес-логика: аудит, парсинг, генерация, планировщик
-│       ├── repository/     # Spring Data JPA репозитории
-│       ├── entity/         # сущности БД
-│       ├── DTO/ · mapper/  # DTO и MapStruct-мапперы
-│       ├── config/         # Security, JWT-фильтр, CORS, Redis, Scheduler, Base62
-│       └── error/          # доменные исключения и глобальный обработчик
-├── frontend/
-│   └── src/
-│       ├── components/     # страницы и переиспользуемые блоки (Header, Stats, Backup…)
-│       ├── store/          # Pinia-хранилища (auth, analysis, loading)
-│       └── api/            # настроенный Axios-клиент
-├── backups/                # сюда складываются дампы БД
-├── docs/screenshots/       # скриншоты для README
-├── env/                    # шаблоны окружения и тестовые данные
-│   ├── .env.example        # шаблон для реального деплоя (CHANGE_ME_*)
-│   ├── .env.test           # безопасные значения для локального запуска и CI
-│   └── README.md
-├── docker-compose.yml
-├── .gitignore
-└── .env                    # создаётся локально, в git не попадает
-```
-
----
-
-## Быстрый старт (Docker)
-
-Нужен установленный **Docker Desktop** (или Docker Engine + Compose v2).
+Нужен **Docker Desktop** (или Docker Engine + Compose v2).
 
 ```bash
 git clone https://github.com/DaniilYemelyanenka/seohelper.git
 cd seohelper
 
-# шаблон окружения: заполните CHANGE_ME_* (JWT_SECRET обязателен)
-cp env/.env.example .env
+cp env/.env.example .env     # заполните CHANGE_ME_* (JWT_SECRET обязателен)
 
 docker compose up --build -d
-```
-
-Для локального стенда или CI можно взять готовые безопасные тестовые значения:
-
-```bash
-cp env/.env.test .env
-# либо без копирования:
-docker compose --env-file env/.env.test up --build -d
-```
-
-> Без `JWT_SECRET` backend не запустится — это защита от случайного деплоя с дефолтным секретом.
-
-После запуска:
-
-| Сервис | Адрес |
-|---|---|
-| Frontend (nginx) | http://localhost |
-| Backend API | http://localhost:8080/api/v1 |
-| PostgreSQL | внутри сети — `postgres:5432` |
-| Redis | внутри сети — `redis:6379` |
-
-Загрузите модель для генерации контента (однократно):
-
-```bash
 docker compose exec ollama ollama pull qwen2.5:3b
 ```
 
-При первом старте Hibernate создаёт схему, а `data.sql` добавляет двух пользователей:
+Приложение — на <http://localhost>, API — на `http://localhost:8080/api/v1`.
 
-| E-mail | Роль |
-|---|---|
-| `admin@example.com` | `ROLE_ADMIN` |
-| `user@example.com` | `ROLE_USER` |
-
-> Пароли в сидах — bcrypt-хэши из репозитория. Для реального использования смените их.
-
-Остановить стек:
+Для локального стенда и CI есть готовые безопасные значения:
 
 ```bash
-docker compose down          # без удаления данных
-docker compose down -v       # вместе с томами PostgreSQL и Ollama
+cp env/.env.test .env
+# или без копирования:
+docker compose --env-file env/.env.test up --build -d
 ```
 
----
+При первом старте `data.sql` создаёт пользователей `admin@example.com` (`ROLE_ADMIN`) и `user@example.com` (`ROLE_USER`). Пароли — bcrypt-хэши из сидов, для реального использования их нужно сменить.
 
-## Локальная разработка
+## Переменные окружения
 
-### Backend
+Секреты в коде не хранятся: все настройки приходят из окружения. Шаблоны и полный список переменных с инструкцией по генерации ключей — в [`env/`](env/README.md).
 
-Требования: **JDK 17+**, Maven (или встроенный wrapper `./mvnw`), запущенные PostgreSQL и Redis.
+| Переменная | Обязательна | Назначение |
+|---|---|---|
+| `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | да | База данных |
+| `REDIS_PASSWORD` | да | Пароль Redis |
+| `JWT_SECRET` | **да** | Секрет подписи JWT; без него backend не стартует |
+| `PAGESPEED_API_KEY` | нет | Ключ PageSpeed Insights |
+| `MAIL_HOST` / `MAIL_PORT` / `MAIL_USERNAME` / `MAIL_PASSWORD` | нет | SMTP для писем |
+| `OLLAMA_MODEL` | нет | Модель Ollama, по умолчанию `qwen2.5:3b` |
+
+`application.properties` содержит только подстановки `${...}`. Файл `.env` добавлен в `.gitignore`.
+
+## Локальный запуск
+
+**Backend** (JDK 17+, PostgreSQL и Redis):
 
 ```bash
 cd backend
@@ -281,20 +120,11 @@ export SPRING_DATA_REDIS_PORT=6379
 export SPRING_DATA_REDIS_PASSWORD=seohelper_test_redis
 export OLLAMA_URL=http://localhost:11434
 export DB_HOST=localhost
-export DB_PORT=5432
-export DB_NAME=seohelper_db
-export JWT_SECRET="$(openssl rand -base64 48)"   # или своё значение, минимум 32 символа
-export PAGESPEED_API_KEY=""                       # необязательно
-export MAIL_USERNAME=""                           # необязательно: без SMTP письма не уходят
-export MAIL_PASSWORD=""
+export JWT_SECRET="$(openssl rand -base64 48)"
 ./mvnw spring-boot:run
 ```
 
-API поднимется на `http://localhost:8080`.
-
-### Frontend
-
-Требования: **Node.js 20+**.
+**Frontend** (Node.js 20+):
 
 ```bash
 cd frontend
@@ -302,207 +132,50 @@ npm install
 npm run dev
 ```
 
-Vite поднимет dev-сервер на `http://localhost:5173`. Axios обращается к относительному `/api/v1`, поэтому для локальной разработки добавьте прокси в `vite.config.js`:
+Axios обращается к относительному `/api/v1`, поэтому для dev-сервера нужен прокси в `vite.config.js`:
 
 ```js
-export default defineConfig({
-  plugins: [vue()],
-  server: {
-    proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true },
-    },
-  },
-})
+server: {
+  proxy: { '/api': { target: 'http://localhost:8080', changeOrigin: true } },
+}
 ```
-
-Продакшен-сборка:
-
-```bash
-npm run build   # результат в frontend/dist, раздаётся nginx
-```
-
----
-
-## Переменные окружения
-
-Все настройки вынесены из кода в переменные окружения. Готовые шаблоны лежат в папке [`env/`](env/README.md):
-
-| Файл | Когда использовать |
-|---|---|
-| [`env/.env.example`](env/.env.example) | Реальное окружение: скопируйте в `.env` и заполните все `CHANGE_ME_*` |
-| [`env/.env.test`](env/.env.test) | Локальный стенд и CI: безопасные тестовые значения, реальных секретов нет |
-
-```bash
-cp env/.env.example .env  # или: cp env/.env.test .env
-```
-
-Файл `.env` добавлен в `.gitignore` и **не попадает в репозиторий**.
-
-### Переменные
-
-| Переменная | Обязательна | Назначение | Пример / по умолчанию |
-|---|---|---|---|
-| `POSTGRES_DB` | да | Имя базы данных | `seohelper_db` |
-| `POSTGRES_USER` | да | Пользователь PostgreSQL | `seohelper` |
-| `POSTGRES_PASSWORD` | да | Пароль PostgreSQL | `CHANGE_ME_POSTGRES_PASSWORD` |
-| `REDIS_PASSWORD` | да | Пароль Redis | `CHANGE_ME_REDIS_PASSWORD` |
-| `JWT_SECRET` | **да** | Секрет подписи JWT, минимум 32 символа | `openssl rand -base64 48` |
-| `PAGESPEED_API_KEY` | нет | Ключ Google PageSpeed Insights | пусто — аудит без метрик скорости |
-| `MAIL_HOST` | нет | SMTP-хост | `smtp.gmail.com` |
-| `MAIL_PORT` | нет | SMTP-порт | `587` |
-| `MAIL_USERNAME` | нет | Логин SMTP | пусто — письма не отправляются |
-| `MAIL_PASSWORD` | нет | Пароль приложения SMTP | пусто |
-| `OLLAMA_MODEL` | нет | Модель Ollama | `qwen2.5:3b` |
-| `JPA_SHOW_SQL` | нет | Логировать SQL Hibernate | `false` |
-| `BACKUP_PATH` | нет | Каталог для дампов БД | `/backups` |
-
-`JWT_SECRET` намеренно не имеет значения по умолчанию: если переменная не задана, приложение не стартует. Это исключает случайный запуск с дефолтным секретом.
-
-### Как это подключено
-
-`application.properties` содержит только подстановки:
-
-```properties
-jwt.secret=${JWT_SECRET}
-google.pagespeed.api.key=${PAGESPEED_API_KEY:}
-spring.mail.username=${MAIL_USERNAME:}
-spring.mail.password=${MAIL_PASSWORD:}
-spring.mail.host=${MAIL_HOST:smtp.gmail.com}
-spring.mail.port=${MAIL_PORT:587}
-spring.ai.ollama.chat.model=${OLLAMA_MODEL:qwen2.5:3b}
-backup.path=${BACKUP_PATH:/backups}
-```
-
-`docker-compose.yml` передаёт эти значения в контейнер backend из `.env` и использует `${POSTGRES_*}` / `${REDIS_PASSWORD}` для самих сервисов БД и кеша.
-
----
 
 ## API
 
-Базовый префикс — `/api/v1`. Защищённые методы требуют заголовок `Authorization: Bearer <JWT>`.
+Базовый префикс — `/api/v1`; защищённые методы требуют `Authorization: Bearer <JWT>`.
 
-### Аутентификация — `/auth`
-
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/auth/register` | Регистрация пользователя |
-| `POST` | `/auth/login` | Вход, возвращает JWT |
-| `POST` | `/auth/confirm-email` | Отправка кода подтверждения |
-| `POST` | `/auth/email-confirmed` | Подтверждение e-mail по коду |
-| `POST` | `/auth/forgot-password` | Запрос сброса пароля |
-| `POST` | `/auth/reset-password` | Установка нового пароля |
-
-### SEO-аудит — `/seo`
-
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/seo/analyze` | Анализ URL, возвращает оценку и рекомендации |
-| `GET` | `/seo/history` | История анализов пользователя |
-| `GET` | `/seo/{id}/analyze-information` | Детали конкретного анализа |
-| `DELETE` | `/seo/delete/{id}` | Удаление записи |
-
-### Генерация контента — `/content`
-
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/content/generate` | Генерация описания сайта или поста |
-| `GET` | `/content/history` | История сгенерированного контента |
-
-### Трек-ссылки — `/track-link`
-
-| Метод | Путь | Описание |
-|---|---|---|
-| `POST` | `/track-link` | Создать короткую ссылку |
-| `GET` | `/track-link/t/{shortCode}` | Переход по ссылке (редирект + сбор статистики) |
-| `GET` | `/track-link/links` | Список ссылок пользователя |
-| `GET` | `/track-link/{shortCode}/analyze` | Агрегированная статистика по ссылке |
-
-### Расписание — `/seo-schedule`
-
-| Метод | Путь | Описание |
-|---|---|---|
-| `GET` | `/seo-schedule/tasks` | Список задач пользователя |
-| `POST` | `/seo-schedule/add` | Добавить задачу (URL + cron) |
-| `DELETE` | `/seo-schedule/delete/{id}` | Удалить задачу |
-
-### Пользователь и админ
-
-| Метод | Путь | Доступ | Описание |
-|---|---|---|---|
-| `GET` | `/users/me` | user | Профиль текущего пользователя |
-| `PUT` | `/users/update` | user | Обновить имя и фамилию |
-| `DELETE` | `/users/delete` | user | Удалить аккаунт |
-| `GET` | `/admin/users` | admin | Список пользователей |
-| `PUT` | `/admin/users/block` | admin | Заблокировать пользователя |
-| `PUT` | `/admin/users/unblock` | admin | Разблокировать пользователя |
-| `GET` | `/admin/stats` | admin | Сводная статистика |
-| `POST` | `/backup/start` | auth | Создать дамп БД (`pg_dump`) |
-| `POST` | `/backup/restore` | auth | Восстановить БД из файла (`pg_restore`) |
-
----
-
-## Модель данных
-
-| Сущность | Назначение |
+| Группа | Эндпоинты |
 |---|---|
-| `User` | Пользователь: имя, e-mail, bcrypt-хэш пароля, флаг подтверждения, активность, роли |
-| `SeoReports` | Результаты SEO-аудита: URL, meta description, H1, SSL, оценки скорости и мобильности |
-| `GeneratedContent` | Сгенерированные материалы: тип, платформа, тема, аудитория, ключевые слова, текст |
-| `TrackedLink` | Короткая ссылка: оригинальный URL, Base62-код, владелец |
-| `LinkVisits` | Визит по трек-ссылке: IP, страна, браузер, устройство, время |
-| `VisitLinksAnalyze` | Агрегаты по переходам для графиков |
-| `SeoSchedule` | Задача регулярного аудита: URL, cron-выражение, владелец |
-| `LoginAttempts`, `system_logs` | Журналы попыток входа и системных событий |
-
----
+| Auth | `POST /auth/register` · `POST /auth/login` · `POST /auth/confirm-email` · `POST /auth/forgot-password` · `POST /auth/reset-password` |
+| SEO | `POST /seo/analyze` · `GET /seo/history` · `GET /seo/{id}/analyze-information` · `DELETE /seo/delete/{id}` |
+| Content | `POST /content/generate` · `GET /content/history` |
+| Track links | `POST /track-link` · `GET /track-link/t/{code}` · `GET /track-link/links` · `GET /track-link/{code}/analyze` |
+| Schedule | `GET /seo-schedule/tasks` · `POST /seo-schedule/add` · `DELETE /seo-schedule/delete/{id}` |
+| Users / Admin | `GET /users/me` · `PUT /users/update` · `GET /admin/users` · `GET /admin/stats` · `PUT /admin/users/block` |
+| Backup | `POST /backup/start` · `POST /backup/restore` |
 
 ## Безопасность
 
-- **JWT (HS256)** — stateless-аутентификация, токен проверяется фильтром на каждом запросе.
-- **Роли** — `ROLE_USER` и `ROLE_ADMIN`, проверка через `@PreAuthorize`; маршруты SPA также защищены гардом роутера.
-- **Подтверждение e-mail** — анализ, генерация и создание трек-ссылок доступны только подтверждённым пользователям (`@emailSecurity.isConfirmed`).
-- **BCrypt** — хранение паролей только в виде хэшей.
-- **Секреты вне кода** — JWT-секрет, пароль SMTP, ключ PageSpeed и пароли БД/Redis задаются только через переменные окружения (`.env`, см. [`env/`](env/README.md)). В `application.properties` остались лишь подстановки `${...}`.
-- **Fail-fast для JWT** — без `JWT_SECRET` backend не стартует, поэтому дефолтного секрета в коде нет.
-- **CORS** — ограничен конфигурацией `CorsConfig`.
-- **Валидация** — Jakarta Validation на DTO, глобальный обработчик ошибок с единым форматом ответа.
-
-> ⚠️ Секреты из старых коммитов остаются в истории git, даже если удалить их из файлов. Если эти ключи когда-либо были настоящими — перевыпустите их: JWT-секрет, пароль приложения Gmail и ключ PageSpeed. Инструкция — в [`env/README.md`](env/README.md#что-делать-если-секреты-уже-утекли).
-
----
+- JWT (HS256) и stateless-сессии, роли проверяются через `@PreAuthorize` и гард роутера.
+- Аудит, генерация и трек-ссылки доступны только пользователям с подтверждённым e-mail.
+- Пароли хранятся как BCrypt-хэши.
+- Секреты задаются только через окружение, без `JWT_SECRET` приложение не стартует.
+- ⚠️ Ключи из прошлых коммитов остаются в истории git — при использовании перевыпустите JWT-секрет, пароль SMTP и ключ PageSpeed (инструкция в [`env/README.md`](env/README.md)).
 
 ## Тесты
 
 ```bash
-cd backend
-./mvnw test
+cd backend && ./mvnw test
 ```
 
-В проекте есть тесты контроллеров и сервисов:
+Покрыты веб-слой и базовые сценарии SEO-анализа; интеграционные тесты с БД и Redis — в планах.
 
-- `SeohelperApplicationTests` — поднятие контекста;
-- `SEOControllerTest`, `ContentControllerTest` — веб-слой;
-- `SEOServiceTest` — логика SEO-анализа.
+## Известные ограничения
 
----
-
-## Известные ограничения и планы
-
-- 🌍 Страна посетителя в трек-ссылках пока определяется условно (`BY`) — планируется GeoIP-сервис.
-- 🔐 В `SecurityConfiguration` проверка `api/v1/admin/** → hasRole("ADMIN")` закомментирована, а `/backup/*` не имеет `@PreAuthorize` — сейчас эти эндпоинты доступны любому аутентифицированному пользователю. Включайте проверку ролей перед публичным деплоем.
-- ☁️ Секреты вынесены в переменные окружения, но ключи из истории git нужно перевыпустить (см. раздел [Безопасность](#безопасность)).
-- 📦 В `frontend/package.json` осталась опечатка-зависимость `pina`, из-за которой `npm ci` завершается ошибкой — удалите строку и используйте `npm install`.
-- 🧪 Покрытие тестами частичное: основные сценарии покрыты, но интеграционные тесты с БД и Redis можно расширить.
-- 📈 В планах: расширенная SEO-аналитика (скорость постранично, история позиций), графики динамики и экспорт отчётов в PDF.
-
----
+- Страна посетителя в трек-ссылках определяется условно (`BY`) — нужен GeoIP.
+- В `SecurityConfiguration` проверка `api/v1/admin/** → hasRole("ADMIN")` закомментирована, у `/backup/*` нет `@PreAuthorize` — перед публичным деплоем включите её.
+- В `frontend/package.json` осталась опечатка-зависимость `pina`, из-за которой `npm ci` падает — удалите строку и используйте `npm install`.
 
 ## Лицензия
 
-Лицензия в репозитории не указана. Если вы планируете использовать проект в продакшене, добавьте файл `LICENSE` с подходящей лицензией.
-
----
-
-<p align="center">
-  Сделано с ☕ и вниманием к деталям · <a href="https://github.com/DaniilYemelyanenka/seohelper">github.com/DaniilYemelyanenka/seohelper</a>
-</p>
+Лицензия не указана. Для использования в продакшене добавьте файл `LICENSE`.
